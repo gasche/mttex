@@ -64,6 +64,12 @@
 
 \DeclareOption{acmart}{\secc@acmarttrue}
 
+%% LLNCS format
+\newif\ifsecc@llncs
+\secc@llncsfalse
+
+\DeclareOption{llncs}{\secc@llncstrue}
+
 %% balance the last page?
 \newif\ifsecc@balance
 \secc@balancefalse
@@ -104,7 +110,10 @@
 \secc@sigplanfalse
 \let\cite=\citep
 \else
+\ifsecc@llncs
+\else
 \RequirePackage{amsthm}
+\fi
 \fi
 
 \ifsecc@sigplan
@@ -247,7 +256,11 @@
 \ifsecc@acmart
   \newcommand{\mit}[1]{\mathit{#1}}
 \else
-  \renewcommand{\mit}[1]{\mathit{#1}}
+\ifsecc@llncs
+    % mit already defined
+\else
+    \renewcommand{\mit}[1]{\mathit{#1}}
+\fi
 \fi
 \makeatother
 \newcommand{\mrm}[1]{\mathrm{#1}}
@@ -305,6 +318,8 @@
 \makeatletter
 \ifsecc@acmart
 \else
+\ifsecc@llncs
+\else
   %% Theorems
   \newcommand{\athmbody}[1]{#1}
   % Could not make athmbodyapce work, for somereason
@@ -345,12 +360,21 @@
   \qed
   \end{list}}
 \fi
+\fi
 \makeatother
 
-\renewenvironment{cases}{\begin{description}}{\end{description}\ignorespacesafterend}
-\newcommand{\case}[1][]{\item[Case] #1}
-\newcommand{\scase}[1][]{\item[Sub-case] #1}
-\newcommand{\sscase}[1][]{\item[SubSub-case] #1}
+\makeatletter
+\ifsecc@llncs
+    % '\case' already defined
+\else
+  \renewenvironment{cases}%
+    {\begin{description}}%
+    {\end{description}\ignorespacesafterend}
+  \newcommand{\case}[1][]{\item[Case] #1}
+  \newcommand{\scase}[1][]{\item[Sub-case] #1}
+  \newcommand{\sscase}[1][]{\item[SubSub-case] #1}
+\fi
+\makeatother
 
 %% TODO Or these
 %\newsavebox{\DetailsBox}%
